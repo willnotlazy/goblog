@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
-	"strings"
 )
 
-func defaultHandler(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(w, "404 not found, path: "+r.URL.Path+", query: "+r.URL.RawQuery)
+	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog！</h1>")
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,17 +17,44 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 		"<a href=\"mailto:summer@example.com\">summer@example.com</a>")
 }
 
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, "<h1>请求页面未找到 :(</h1><p>如有疑惑,请联系我们.</p>")
+}
+
+func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Fprint(w, "文章 ID:"+id)
+}
+
+func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "访问文章列表")
+}
+
+func articlesStoreHandle(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "创建新的文章")
+}
+
 func main() {
 
-	route := http.NewServeMux()
+	router := mux.NewRouter()
 
-	route.HandleFunc("/", defaultHandler)
-	route.HandleFunc("/about", aboutHandler)
+	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
+	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 
-	route.HandleFunc("/articles/", func(writer http.ResponseWriter, request *http.Request) {
-		id := strings.SplitN(request.URL.Path, "/", 3)[2]
-		fmt.Fprint(writer, "article id "+id)
-	})
+	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
+	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
+	router.HandleFunc("/articles", articlesStoreHandle).Methods("POST").Name("articles.store")
 
-	http.ListenAndServe(":8088", route)
+	// 404
+	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+
+	homeURL, _ := router.Get("home").URL()
+	fmt.Println("homeURL:", homeURL)
+	articleURL, _ := router.Get("articles.show").URL("id", "123")
+	fmt.Println("articleURL:", articleURL)
+	http.ListenAndServe(":8088", router)
 }
