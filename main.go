@@ -1,15 +1,54 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"html/template"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
+
+var router = mux.NewRouter().StrictSlash(true)
+var db *sql.DB
+
+func initDB() {
+	var err error
+	config := mysql.Config{
+		User:                 "luojy",
+		Passwd:               "secret",
+		Addr:                 "192.168.4.22:3306",
+		Net:                  "tcp",
+		DBName:               "goblog",
+		AllowNativePasswords: true,
+	}
+
+	db, err = sql.Open("mysql", config.FormatDSN())
+	checkError(err)
+
+	// 设置最大连接数
+	db.SetMaxOpenConns(25)
+	// 设置最大空闲连接数
+	db.SetMaxIdleConns(25)
+	// 设置每个链接的过期时间
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	// 尝试连接
+	err = db.Ping()
+	checkError(err)
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog！</h1>")
@@ -38,7 +77,7 @@ func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
 type articlesFormData struct {
 	Title, Body string
 	URL         *url.URL
-	Errors map[string]string
+	Errors      map[string]string
 }
 
 func articlesStoreHandle(w http.ResponseWriter, r *http.Request) {
@@ -70,9 +109,9 @@ func articlesStoreHandle(w http.ResponseWriter, r *http.Request) {
 		storeURL, _ := router.Get("articles.store").URL()
 
 		data := articlesFormData{
-			Title: title,
-			Body: body,
-			URL: storeURL,
+			Title:  title,
+			Body:   body,
+			URL:    storeURL,
 			Errors: errors,
 		}
 
@@ -94,7 +133,6 @@ func articleCreateHandle(w http.ResponseWriter, r *http.Request) {
 	data := articlesFormData{
 		URL: storeURL,
 	}
-
 
 	tml, err := template.ParseFiles("resources/views/articles/create.gohtml")
 	if err != nil {
@@ -126,9 +164,10 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 	})
 }
 
-var router = mux.NewRouter().StrictSlash(true)
-
 func main() {
+
+	initDB()
+
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 
