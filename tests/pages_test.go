@@ -38,9 +38,9 @@ import (
 func TestAllPages(t *testing.T) {
 	baseURL := "http://localhost:8088"
 
-	var tests = []struct{
-		method string
-		url string
+	var tests = []struct {
+		method   string
+		url      string
 		expected int
 	}{
 		{"GET", "/", 200},
@@ -60,18 +60,18 @@ func TestAllPages(t *testing.T) {
 
 		var (
 			resp *http.Response
-			err error
+			err  error
 		)
 
 		switch {
 		case test.method == "POST":
 			data := make(map[string][]string)
-			resp, err = http.PostForm(baseURL + test.url, data)
+			resp, err = http.PostForm(baseURL+test.url, data)
 		default:
 			resp, err = http.Get(baseURL + test.url)
 		}
 
 		assert.NoError(t, err, "存在错误")
-		assert.Equal(t, test.expected, resp.StatusCode, "返回码与预期" + strconv.Itoa(test.expected) + "不符，返回：" + strconv.Itoa(resp.StatusCode))
+		assert.Equal(t, test.expected, resp.StatusCode, "返回码与预期"+strconv.Itoa(test.expected)+"不符，返回："+strconv.Itoa(resp.StatusCode))
 	}
 }

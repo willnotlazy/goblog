@@ -6,6 +6,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"goblog/pkg/route"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 	"unicode/utf8"
 )
 
-var router = mux.NewRouter().StrictSlash(true)
+var router *mux.Router
 var db *sql.DB
 
 func initDB() {
@@ -122,7 +123,7 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		tmpl, err := template.New("show.gohtml").Funcs(
 			template.FuncMap{
-				"RouteName2URL": RouteName2URL,
+				"RouteName2URL": route.Name2URL,
 				"Int64ToString": Int64ToString,
 			},
 		).ParseFiles("resources/views/articles/show.gohtml")
@@ -426,6 +427,7 @@ func RouteName2URL(routeName string, pair ...string) string {
 
 	if err != nil {
 		checkError(err)
+		return ""
 	}
 
 	return url.String()
@@ -439,6 +441,9 @@ func main() {
 
 	initDB()
 	createTables()
+
+	route.Initialize()
+	router = route.Router
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
