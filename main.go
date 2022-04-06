@@ -107,7 +107,7 @@ func (article Article) Delete() (int64, error) {
 }
 
 func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	article, err := getArticleByID(id)
 
@@ -250,7 +250,7 @@ func articleCreateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func articleEditHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	article, err := getArticleByID(id)
 
@@ -281,7 +281,7 @@ func articleEditHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articleUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	_, err := getArticleByID(id)
 	if err != nil {
@@ -337,7 +337,7 @@ func articleUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	article, err := getArticleByID(id)
 
@@ -388,12 +388,6 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
-}
-
-func getRouteVariable(parameterName string, r *http.Request) string {
-	vars := mux.Vars(r)
-
-	return vars[parameterName]
 }
 
 func getArticleByID(id string) (Article, error) {
