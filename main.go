@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"goblog/bootstrap"
 	"goblog/pkg/database"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
@@ -374,27 +375,14 @@ func validateArticleFormData(title, body string) map[string]string {
 	return errors
 }
 
-func RouteName2URL(routeName string, pair ...string) string {
-	url, err := router.Get(routeName).URL(pair...)
-
-	if err != nil {
-		logger.LogError(err)
-		return ""
-	}
-
-	return url.String()
-}
-
 func main() {
 
 	database.Initialize()
 	db = database.DB
 
-	route.Initialize()
-	router = route.Router
+	router = bootstrap.SetupRoute()
 
-	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
-	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
+
 
 	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
@@ -404,8 +392,7 @@ func main() {
 	router.HandleFunc("/articles/{id:[0-9+]}", articleUpdateHandler).Methods("POST").Name("articles.update")
 	router.HandleFunc("/articles/{id:[0-9+]}/delete", articlesDeleteHandler).Methods("POST").Name("articles.delete")
 
-	// 404
-	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+
 
 	// middlerware
 	router.Use(forceHTMLMiddleware)
