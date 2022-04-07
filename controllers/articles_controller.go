@@ -14,7 +14,17 @@ import (
 
 type ArticlesController struct {}
 
-func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {}
+func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
+
+	articles, err := article2.GetAll()
+	logger.LogError(err)
+
+	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
+	logger.LogError(err)
+
+	err = tmpl.Execute(w, articles)
+	logger.LogError(err)
+}
 
 func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 	id := route.GetRouteVariable("id", r)

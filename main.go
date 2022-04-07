@@ -27,16 +27,6 @@ type Article struct {
 	ID    int64
 }
 
-func (article Article) Link() string {
-	showURL, err := router.Get("articles.show").URL("id", strconv.FormatInt(article.ID, 10))
-	if err != nil {
-		logger.LogError(err)
-		return ""
-	}
-
-	return showURL.String()
-}
-
 func (article Article) Delete() (int64, error) {
 	rs, err := db.Exec("DELETE FROM articles where id = " + strconv.FormatInt(article.ID, 10))
 
@@ -49,30 +39,6 @@ func (article Article) Delete() (int64, error) {
 	}
 
 	return 0, nil
-}
-
-func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT * FROM articles")
-	logger.LogError(err)
-	defer rows.Close()
-
-	var articles []Article
-
-	for rows.Next() {
-		var article Article
-		err := rows.Scan(&article.ID, &article.Title, &article.Body)
-		logger.LogError(err)
-		articles = append(articles, article)
-	}
-
-	err = rows.Err()
-	logger.LogError(err)
-
-	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
-	logger.LogError(err)
-
-	err = tmpl.Execute(w, articles)
-	logger.LogError(err)
 }
 
 type articlesFormData struct {
@@ -340,9 +306,7 @@ func main() {
 
 	bootstrap.SetupDB()
 	router = bootstrap.SetupRoute()
-	route.SetRoute(router)
-
-	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
+	
 	router.HandleFunc("/articles", articlesStoreHandle).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articleCreateHandle).Methods("GET").Name("articles.create")
 	router.HandleFunc("/articles/{id:[0-9+]}/edit", articleEditHandler).Methods("GET").Name("articles.edit")
