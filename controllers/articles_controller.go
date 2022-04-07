@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"database/sql"
 	"fmt"
 	"goblog/models/article"
 	"goblog/pkg/logger"
@@ -109,6 +110,93 @@ func (*ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
 	err = tml.Execute(w, data)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func (*ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
+	id := route.GetRouteVariable("id", r)
+
+	article, err := article.Get(id)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "404 文章未找到")
+		} else {
+			logger.LogError(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500 服务器内部错误")
+		}
+	} else {
+		updateURL := route.Name2URL("articles.update", "id", id)
+		data := ArticlesFormData{
+			URL:    updateURL,
+			Title:  article.Title,
+			Body:   article.Body,
+			Errors: nil,
+		}
+
+		tmpl, err := template.ParseFiles("resources/views/articles/edit.gohtml")
+		logger.LogError(err)
+
+		err = tmpl.Execute(w, data)
+		logger.LogError(err)
+	}
+}
+
+func (*ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
+	id := route.GetRouteVariable("id", r)
+
+	_article, err := article.Get(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "404 文章未找到")
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500 服务器内部错误")
+		}
+	} else {
+		title := r.PostFormValue("title")
+		body := r.PostFormValue("body")
+
+		errors := validateArticleFormData(title, body)
+
+		if len(errors) == 0 {
+			_article.Title = title
+			_article.Body = body
+			rowsAffected, err := _article.Update()
+
+			if err != nil {
+				logger.LogError(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "500 服务器内部错误")
+			}
+
+			if rowsAffected > 0 {
+				showURL := route.Name2URL("articles.show", "id", id)
+
+				http.Redirect(w, r, showURL, http.StatusFound)
+			} else {
+				fmt.Fprint(w, "你没有做任何修改")
+			}
+		} else {
+			updateURL := route.Name2URL("articles.update", "id", id)
+			logger.LogError(err)
+
+			data := ArticlesFormData{
+				URL:    updateURL,
+				Title:  title,
+				Body:   body,
+				Errors: errors,
+			}
+
+			tmpl, err := template.ParseFiles("resources/views/articles/edit.gohtml")
+			logger.LogError(err)
+
+			err = tmpl.Execute(w, data)
+			logger.LogError(err)
+		}
 	}
 }
 

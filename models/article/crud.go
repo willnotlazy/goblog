@@ -1,6 +1,7 @@
 package article
 
 import (
+	"fmt"
 	"goblog/pkg/logger"
 	"goblog/pkg/model"
 	"goblog/pkg/types"
@@ -34,4 +35,17 @@ func (article *Article)Create() error {
 	}
 
 	return nil
+}
+
+func (article *Article) Update() (int64, error) {
+	rs := model.DB.Save(&article)
+
+	fmt.Println(rs.Error, rs.RowsAffected)
+
+	if err := rs.Error; err != nil {
+		logger.LogError(err)
+		return 0, err
+	}
+
+	return rs.RowsAffected, nil
 }

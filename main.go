@@ -76,54 +76,6 @@ func saveArticleToDB(title string, body string) (int64, error) {
 	return 0, err
 }
 
-func articleCreateHandle(w http.ResponseWriter, r *http.Request) {
-	storeURL, _ := router.Get("articles.store").URL()
-	data := articlesFormData{
-		URL: storeURL,
-	}
-
-	tml, err := template.ParseFiles("resources/views/articles/create.gohtml")
-	if err != nil {
-		panic(err)
-	}
-
-	err = tml.Execute(w, data)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func articleEditHandler(w http.ResponseWriter, r *http.Request) {
-	id := route.GetRouteVariable("id", r)
-
-	article, err := getArticleByID(id)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 文章未找到")
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
-		}
-	} else {
-		updateURL, _ := router.Get("articles.update").URL("id", id)
-		data := articlesFormData{
-			URL:    updateURL,
-			Title:  article.Title,
-			Body:   article.Body,
-			Errors: nil,
-		}
-
-		tmpl, err := template.ParseFiles("resources/views/articles/edit.gohtml")
-		logger.LogError(err)
-
-		err = tmpl.Execute(w, data)
-		logger.LogError(err)
-	}
-}
-
 func articleUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	id := route.GetRouteVariable("id", r)
 
@@ -269,8 +221,6 @@ func main() {
 	router = bootstrap.SetupRoute()
 
 
-	router.HandleFunc("/articles/{id:[0-9+]}/edit", articleEditHandler).Methods("GET").Name("articles.edit")
-	router.HandleFunc("/articles/{id:[0-9+]}", articleUpdateHandler).Methods("POST").Name("articles.update")
 	router.HandleFunc("/articles/{id:[0-9+]}/delete", articlesDeleteHandler).Methods("POST").Name("articles.delete")
 
 
