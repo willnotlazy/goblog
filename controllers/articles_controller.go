@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
+	article2 "goblog/models/article"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"goblog/pkg/types"
+	"gorm.io/gorm"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -18,10 +19,9 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {}
 func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 	id := route.GetRouteVariable("id", r)
 
-	article, err := getArticleByID(id)
-
+	article, err := article2.Get(id)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == gorm.ErrRecordNotFound {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprint(w, "文章未找到")
 		} else {
@@ -33,7 +33,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.New("show.gohtml").Funcs(
 			template.FuncMap{
 				"RouteName2URL": route.Name2URL,
-				"Int64ToString": types.Int64ToString,
+				"Uint64ToString": types.Uint64ToString,
 			},
 		).ParseFiles("resources/views/articles/show.gohtml")
 		logger.LogError(err)
@@ -43,20 +43,6 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getArticleByID(id string) (Article, error) {
-	query := "SELECT * FROM articles where id = ?"
-	article := Article{}
-	err := db.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Body)
-
-	return article, err
-}
-
-type Article struct {
-	Title string
-	Body  string
-	ID    int64
-}
-
 type articlesFormData struct {
 	Title, Body string
 	URL         *url.URL
@@ -64,5 +50,5 @@ type articlesFormData struct {
 }
 
 func NewArticlesController() *ArticlesController {
-	return new(ArticlesController)
+	return &ArticlesController{}
 }

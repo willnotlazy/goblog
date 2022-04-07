@@ -1,7 +1,20 @@
 package types
 
-import "strconv"
+import (
+	"goblog/pkg/logger"
+	"strconv"
+)
 
-func Int64ToString(i int64) string {
-	return strconv.FormatInt(i, 10)
+func Uint64ToString(i uint64) string {
+	return strconv.FormatUint(i, 10)
+}
+
+func StringToUint64(s string) uint64 {
+	i, err := strconv.ParseUint(s, 10, 64)
+
+	if err != nil {
+		logger.LogError(err)
+	}
+
+	return i
 }
