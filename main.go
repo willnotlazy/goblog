@@ -47,45 +47,6 @@ type articlesFormData struct {
 	Errors      map[string]string
 }
 
-func articlesStoreHandle(w http.ResponseWriter, r *http.Request) {
-	title := r.PostFormValue("title")
-	body := r.PostFormValue("body")
-
-	errors := validateArticleFormData(title, body)
-
-	// 检查是否有错误
-	if len(errors) == 0 {
-		lastInsertID, err := saveArticleToDB(title, body)
-		if lastInsertID > 0 {
-			fmt.Fprint(w, "插入成功，ID为"+strconv.FormatInt(lastInsertID, 10))
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务内部错误")
-		}
-	} else {
-		storeURL, _ := router.Get("articles.store").URL()
-
-		data := articlesFormData{
-			Title:  title,
-			Body:   body,
-			URL:    storeURL,
-			Errors: errors,
-		}
-
-		tml, err := template.ParseFiles("resources/views/articles/create.gohtml")
-
-		if err != nil {
-			panic(err)
-		}
-
-		err = tml.Execute(w, data)
-		if err != nil {
-			panic(err)
-		}
-	}
-}
-
 func saveArticleToDB(title string, body string) (int64, error) {
 	var (
 		id   int64
@@ -306,9 +267,8 @@ func main() {
 
 	bootstrap.SetupDB()
 	router = bootstrap.SetupRoute()
-	
-	router.HandleFunc("/articles", articlesStoreHandle).Methods("POST").Name("articles.store")
-	router.HandleFunc("/articles/create", articleCreateHandle).Methods("GET").Name("articles.create")
+
+
 	router.HandleFunc("/articles/{id:[0-9+]}/edit", articleEditHandler).Methods("GET").Name("articles.edit")
 	router.HandleFunc("/articles/{id:[0-9+]}", articleUpdateHandler).Methods("POST").Name("articles.update")
 	router.HandleFunc("/articles/{id:[0-9+]}/delete", articlesDeleteHandler).Methods("POST").Name("articles.delete")
