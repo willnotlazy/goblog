@@ -7,10 +7,10 @@ import (
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"goblog/pkg/types"
+	"goblog/pkg/view"
 	"gorm.io/gorm"
 	"html/template"
 	"net/http"
-	"path/filepath"
 	"unicode/utf8"
 )
 
@@ -21,19 +21,7 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 	_articles, err := article.GetAll()
 	logger.LogError(err)
 
-	viewDir := "resources/views"
-
-	// 所有布局模板文件
-	files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
-	logger.LogError(err)
-
-	newFiles := append(files, viewDir + "/articles/index.gohtml")
-
-	tmpl, err := template.ParseFiles(newFiles...)
-	logger.LogError(err)
-
-	err = tmpl.ExecuteTemplate(w, "app", _articles)
-	logger.LogError(err)
+	view.Render(w, "articles.index", _articles)
 }
 
 func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
@@ -50,21 +38,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-
-		viewDir := "resources/views"
-
-		files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
-		newFiles := append(files, viewDir + "/articles/show.gohtml")
-		tmpl, err := template.New("show.gohtml").Funcs(
-			template.FuncMap{
-				"RouteName2URL":  route.Name2URL,
-				"Uint64ToString": types.Uint64ToString,
-			},
-		).ParseFiles(newFiles...)
-		logger.LogError(err)
-
-		err = tmpl.ExecuteTemplate(w, "app", _article)
-		logger.LogError(err)
+		view.Render(w,"articles.show", _article)
 	}
 }
 
