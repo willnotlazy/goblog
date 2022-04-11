@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type PageController struct {}
+type PageController struct{}
 
 func (page *PageController) Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog！</h1>")

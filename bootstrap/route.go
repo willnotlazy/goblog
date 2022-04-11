@@ -13,6 +13,5 @@ func SetupRoute() *mux.Router {
 
 	route.SetRoute(router)
 
-
 	return router
 }

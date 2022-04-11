@@ -6,9 +6,9 @@ import (
 )
 
 type Article struct {
-	ID uint64
+	ID    uint64
 	Title string
-	Body string
+	Body  string
 }
 
 func (article Article) Link() string {

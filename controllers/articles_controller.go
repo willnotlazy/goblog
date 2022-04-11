@@ -10,20 +10,29 @@ import (
 	"gorm.io/gorm"
 	"html/template"
 	"net/http"
+	"path/filepath"
 	"unicode/utf8"
 )
 
-type ArticlesController struct {}
+type ArticlesController struct{}
 
 func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 	_articles, err := article.GetAll()
 	logger.LogError(err)
 
-	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
+	viewDir := "resources/views"
+
+	// 所有布局模板文件
+	files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
 	logger.LogError(err)
 
-	err = tmpl.Execute(w, _articles)
+	newFiles := append(files, viewDir + "/articles/index.gohtml")
+
+	tmpl, err := template.ParseFiles(newFiles...)
+	logger.LogError(err)
+
+	err = tmpl.ExecuteTemplate(w, "app", _articles)
 	logger.LogError(err)
 }
 
@@ -43,7 +52,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 	} else {
 		tmpl, err := template.New("show.gohtml").Funcs(
 			template.FuncMap{
-				"RouteName2URL": route.Name2URL,
+				"RouteName2URL":  route.Name2URL,
 				"Uint64ToString": types.Uint64ToString,
 			},
 		).ParseFiles("resources/views/articles/show.gohtml")
@@ -64,7 +73,7 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 	if len(errors) == 0 {
 		var _article = article.Article{
 			Title: title,
-			Body: body,
+			Body:  body,
 		}
 		_article.Create()
 		if _article.ID > 0 {

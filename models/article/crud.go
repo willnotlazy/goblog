@@ -26,7 +26,7 @@ func GetAll() ([]Article, error) {
 	return articles, nil
 }
 
-func (article *Article)Create() error {
+func (article *Article) Create() error {
 	rs := model.DB.Create(&article)
 
 	if err := rs.Error; err != nil {
