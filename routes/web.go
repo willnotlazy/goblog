@@ -28,4 +28,8 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/articles/{id:[0-9+]}/delete", ac.Delete).Methods("POST").Name("articles.delete")
 
 	//r.Use(middlerwares.ForceHTML)
+	// 用户认证
+	auc := controllers.NewAuthController()
+	r.HandleFunc("/auth/register", auc.Register).Methods("GET").Name("auth.register")
+	r.HandleFunc("/auth/do-register", auc.DoRegister).Methods("POST").Name("auth.doregister")
 }

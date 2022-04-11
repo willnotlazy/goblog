@@ -20,7 +20,7 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 	_articles, err := article.GetAll()
 	logger.LogError(err)
 
-	view.Render(w, _articles, "articles.index")
+	view.Render(w, view.D{"articles": _articles}, "articles.index")
 }
 
 func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +37,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-		view.Render(w,_article, "articles.show")
+		view.Render(w, view.D{"article": _article}, "articles.show")
 	}
 }
 
@@ -62,17 +62,17 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 
-		data := ArticlesFormData{
-			Title:  title,
-			Body:   body,
-			Errors: errors,
+		data := view.D{
+			"Title":  title,
+			"Body":   body,
+			"Errors": errors,
 		}
 		view.Render(w, data, []string{"articles.create", "articles._form_field"}...)
 	}
 }
 
 func (*ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
-	view.Render(w, ArticlesFormData{}, []string{"articles.create", "articles._form_field"}...)
+	view.Render(w, view.D{}, []string{"articles.create", "articles._form_field"}...)
 }
 
 func (*ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
@@ -90,11 +90,11 @@ func (*ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-		data := ArticlesFormData{
-			Title:  _article.Title,
-			Body:   _article.Body,
-			Article: _article,
-			Errors: nil,
+		data := view.D{
+			"Title":  _article.Title,
+			"Body":   _article.Body,
+			"Article": _article,
+			"Errors": nil,
 		}
 
 		view.Render(w, data, "articles.edit", "articles._form_field")
@@ -139,11 +139,11 @@ func (*ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 
-			data := ArticlesFormData{
-				Title:  title,
-				Body:   body,
-				Article: _article,
-				Errors: errors,
+			data := view.D{
+				"Title":  title,
+				"Body":   body,
+				"Article": _article,
+				"Errors": errors,
 			}
 			view.Render(w, data, "articles.edit", "articles._form_field")
 		}
