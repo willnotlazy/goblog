@@ -24,4 +24,8 @@ func (user *User) Create() error {
 	return nil
 }
 
+func (user *User) ComparePassword(password string) bool {
+	return user.Password == password
+}
+
 
