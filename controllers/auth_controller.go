@@ -21,7 +21,6 @@ func (*AuthController) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
-
 	_user := user.User{
 		Name: r.PostFormValue("name"),
 		Email: r.PostFormValue("email"),
@@ -46,6 +45,17 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "创建用户失败，请联系管理员")
 		}
 	}
+}
+
+func (*AuthController) Login(w http.ResponseWriter, r *http.Request) {
+	view.RenderSimple(w, view.D{}, "auth.login")
+}
+
+func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
+	//_user := user.User{
+	//	Name: r.PostFormValue("name"),
+	//	Password: r.PostFormValue("password"),
+	//}
 
 
 }
