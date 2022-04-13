@@ -40,7 +40,8 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 		_user.Create()
 
 		if _user.ID > 0 {
-			fmt.Fprint(w, "新建用户成功， ID：" + _user.GetStringID())
+			auth.Login(_user)
+			http.Redirect(w, r, "/", http.StatusFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "创建用户失败，请联系管理员")

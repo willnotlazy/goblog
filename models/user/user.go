@@ -4,6 +4,7 @@ import (
 	"goblog/models"
 	"goblog/pkg/logger"
 	"goblog/pkg/model"
+	"goblog/pkg/password"
 )
 
 type User struct {
@@ -24,8 +25,8 @@ func (user *User) Create() error {
 	return nil
 }
 
-func (user *User) ComparePassword(password string) bool {
-	return user.Password == password
+func (user *User) ComparePassword(_password string) bool {
+	return password.CheckHash(_password, user.Password)
 }
 
 
