@@ -10,10 +10,9 @@ import (
 )
 
 type AuthController struct {
-
 }
 
-func NewAuthController()  *AuthController {
+func NewAuthController() *AuthController {
 	return new(AuthController)
 }
 
@@ -23,9 +22,9 @@ func (*AuthController) Register(w http.ResponseWriter, r *http.Request) {
 
 func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 	_user := user.User{
-		Name: r.PostFormValue("name"),
-		Email: r.PostFormValue("email"),
-		Password: r.PostFormValue("password"),
+		Name:            r.PostFormValue("name"),
+		Email:           r.PostFormValue("email"),
+		Password:        r.PostFormValue("password"),
 		PasswordConfirm: r.PostFormValue("password_confirm"),
 	}
 
@@ -34,7 +33,7 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 	if len(errs) > 0 {
 		view.RenderSimple(w, view.D{
 			"Errors": errs,
-			"User": _user,
+			"User":   _user,
 		}, "auth.register")
 	} else {
 		_user.Create()
@@ -61,8 +60,8 @@ func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		view.RenderSimple(w, view.D{
-			"Error": err.Error(),
-			"Email": email,
+			"Error":    err.Error(),
+			"Email":    email,
 			"Password": password,
 		}, "auth.login")
 	}

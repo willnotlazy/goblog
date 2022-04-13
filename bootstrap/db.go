@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"goblog/models/article"
+	"goblog/models/passwordReset"
 	"goblog/models/user"
 	"goblog/pkg/model"
 	"gorm.io/gorm"
@@ -21,5 +22,5 @@ func SetupDB() {
 }
 
 func migration(db *gorm.DB) {
-	db.AutoMigrate(&user.User{}, &article.Article{})
+	db.AutoMigrate(&user.User{}, &article.Article{}, &passwordReset.PasswordReset{})
 }

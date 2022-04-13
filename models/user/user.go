@@ -10,9 +10,9 @@ import (
 type User struct {
 	models.BaseModel
 
-	Name      string `gorm:"type:varchar(256);not null;unique" valid:"name"`
-	Email     string `gorm:"type:varchar(256);unique" valid:"email"`
-	Password  string `gorm:"type:varchar(256)" valid:"password"`
+	Name            string `gorm:"type:varchar(256);not null;unique" valid:"name"`
+	Email           string `gorm:"type:varchar(256);unique" valid:"email"`
+	Password        string `gorm:"type:varchar(256)" valid:"password"`
 	PasswordConfirm string `gorm:"-" valid:"password_confirm"`
 }
 
@@ -28,5 +28,3 @@ func (user *User) Create() error {
 func (user *User) ComparePassword(_password string) bool {
 	return password.CheckHash(_password, user.Password)
 }
-
-

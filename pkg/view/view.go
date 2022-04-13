@@ -12,7 +12,7 @@ import (
 
 type D map[string]interface{}
 
-func Render(w io.Writer, data D, tplFiles ...string)  {
+func Render(w io.Writer, data D, tplFiles ...string) {
 	RenderTemplate(w, "app", data, tplFiles...)
 }
 

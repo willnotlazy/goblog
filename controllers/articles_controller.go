@@ -91,10 +91,10 @@ func (*ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		data := view.D{
-			"Title":  _article.Title,
-			"Body":   _article.Body,
+			"Title":   _article.Title,
+			"Body":    _article.Body,
 			"Article": _article,
-			"Errors": nil,
+			"Errors":  nil,
 		}
 
 		view.Render(w, data, "articles.edit", "articles._form_field")
@@ -140,10 +140,10 @@ func (*ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			data := view.D{
-				"Title":  title,
-				"Body":   body,
+				"Title":   title,
+				"Body":    body,
 				"Article": _article,
-				"Errors": errors,
+				"Errors":  errors,
 			}
 			view.Render(w, data, "articles.edit", "articles._form_field")
 		}
@@ -186,7 +186,7 @@ func (*ArticlesController) Delete(w http.ResponseWriter, r *http.Request) {
 
 type ArticlesFormData struct {
 	Title, Body string
-	Article article.Article
+	Article     article.Article
 	Errors      map[string]string
 }
 

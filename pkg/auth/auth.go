@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func _getUID() string{
+func _getUID() string {
 	_uid := session.Get("uid")
 	uid, ok := _uid.(string)
 
