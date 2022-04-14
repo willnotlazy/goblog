@@ -7,7 +7,7 @@ import (
 
 func GetByEmail(email string) (PasswordReset, error) {
 	var _passwordReset PasswordReset
-	rs := model.DB.Where("email = ?").First(&_passwordReset)
+	rs := model.DB.Where("email = ?", email).First(&_passwordReset)
 
 	if err := rs.Error; err != nil {
 		logger.LogError(err)

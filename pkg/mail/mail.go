@@ -13,7 +13,8 @@ func SendMail(subject, body string, to ...string) error {
 
 	m.SetHeader("Subject", "重置密码")
 	m.SetHeader("To", to...)
-	m.SetHeader("From", "519478450@qq.com")
+	m.SetHeader("From", m.FormatAddress("519478450@qq.com", "goblog@qq.com"))
+
 	m.SetBody("text/html", body)
 
 	d := gomail.NewDialer("smtp.qq.com", 465, "519478450@qq.com", "vqmypcczikhxbhad")

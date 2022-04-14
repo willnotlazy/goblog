@@ -28,6 +28,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
 	tmpl, err := template.New("").Funcs(template.FuncMap{
 		"RouteName2URL": route.Name2URL,
+		"SafeURL":route.SafeURL,
 	}).ParseFiles(allFiles...)
 	logger.LogError(err)
 

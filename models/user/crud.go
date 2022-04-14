@@ -27,3 +27,13 @@ func GetByEmail(email string) (User, error) {
 
 	return _user, nil
 }
+
+
+func (user *User) Save() error {
+	if err := model.DB.Save(&user).Error; err != nil {
+		logger.LogError(err)
+		return err
+	}
+
+	return nil
+}

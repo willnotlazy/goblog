@@ -46,4 +46,5 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/password/forgot", fpc.ForgotPassword).Methods("GET").Name("password.forgotpassword")
 	r.HandleFunc("/password/mail", fpc.ForgotPasswordMail).Methods("POST").Name("password.forgot_password_mail")
 	r.HandleFunc("/password/reset", fpc.ResetPassword).Methods("GET").Name("password.reset")
+	r.HandleFunc("/password/doreset", fpc.DoReset).Methods("POST").Name("password.doreset")
 }

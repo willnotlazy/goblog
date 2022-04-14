@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"goblog/app/requests"
 	"goblog/models/passwordReset"
+	"goblog/models/user"
 	"goblog/pkg/mail"
 	"goblog/pkg/view"
 	"net/http"
@@ -44,7 +45,7 @@ func (*ForgotPasswordController) ForgotPasswordMail(w http.ResponseWriter, r *ht
 			if rowsAffected > 0 {
 				w.WriteHeader(http.StatusOK)
 				body := new(bytes.Buffer)
-				view.RenderSimple(body, view.D{"Salt":_passwordReset.Salt, "Email":email}, "mail.reset_password_mail")
+				view.RenderSimple(body, view.D{"Salt": _passwordReset.Salt, "Email": email}, "mail.reset_password_mail")
 				err = mail.SendMail("goblog 密码重置", body.String(), _passwordReset.Email)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
@@ -81,6 +82,46 @@ func (*ForgotPasswordController) ResetPassword(w http.ResponseWriter, r *http.Re
 				w.WriteHeader(http.StatusForbidden)
 				fmt.Fprint(w, "无操作权限," + err.Error())
 			} else {
+				view.RenderSimple(w, view.D{"Email": email, "Salt": salt}, "password.reset")
+			}
+		}
+	}
+}
+
+func (*ForgotPasswordController) DoReset(w http.ResponseWriter, r *http.Request) {
+	var _passwordReset = passwordReset.PasswordReset{
+		Email: r.PostFormValue("email"),
+		Salt: r.PostFormValue("salt"),
+		Password: r.PostFormValue("password"),
+	}
+
+	errs := requests.ValidPasswordResetForm(_passwordReset)
+	if len(errs) > 0 {
+		_, saltOk := errs["salt"]
+		_, emailOk := errs["email"]
+
+		if saltOk || emailOk {
+			w.WriteHeader(http.StatusForbidden)
+			fmt.Fprint(w, "无操作权限")
+		} else {
+			w.WriteHeader(http.StatusFound)
+			view.RenderSimple(w, view.D{"Salt": _passwordReset.Salt, "Email": _passwordReset.Email, "Password": _passwordReset.Password, "Error": errs}, "password.reset")
+		}
+	} else {
+		_passwordReset_db, err := passwordReset.GetByEmail(_passwordReset.Email)
+		fmt.Println(_passwordReset.Email)
+		_user, uerr := user.GetByEmail(_passwordReset.Email)
+		if err != nil || uerr != nil || _passwordReset_db.CanReset(_passwordReset.Salt) != nil {
+			w.WriteHeader(http.StatusForbidden)
+			fmt.Fprint(w, "无权限操作, 改账户不存在或本次操作已过期")
+		} else {
+			_user.Password = _passwordReset.Password
+			err := _user.Save()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "修改失败，请联系管理员")
+			} else {
+				w.WriteHeader(http.StatusFound)
 				view.RenderSimple(w, view.D{}, "auth.login")
 			}
 		}
