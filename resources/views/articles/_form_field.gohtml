@@ -2,7 +2,7 @@
   <div class="form-group mt-3">
     <label for="title">标题</label>
     {{$errors := .Errors}}
-    <input type="text" class="form-control {{if $errors.title }}is-invalid {{end}}" name="title" value="{{ .Title }}" required>
+    <input type="text" class="form-control {{if $errors.title }}is-invalid {{end}}" name="title" value="{{ .Article.Title }}" required>
       {{ with $errors.title }}
         <div class="invalid-feedback">
             {{ . }}
@@ -12,7 +12,7 @@
 
   <div class="form-group mt-3">
     <label for="body">内容</label>
-    <textarea name="body" cols="30" rows="10" class="form-control {{if $errors.body }}is-invalid {{end}}">{{ .Body }}</textarea>
+    <textarea name="body" cols="30" rows="10" class="form-control {{if $errors.body }}is-invalid {{end}}">{{ .Article.Body }}</textarea>
       {{ with $errors.body }}
         <div class="invalid-feedback">
             {{ . }}
