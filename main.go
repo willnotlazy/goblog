@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"goblog/bootstrap"
+	"goblog/config"
 	"goblog/http/middlerwares"
 	"goblog/pkg/database"
 	"net/http"
@@ -18,6 +19,10 @@ type articlesFormData struct {
 	Title, Body string
 	URL         *url.URL
 	Errors      map[string]string
+}
+
+func init() {
+	config.Initialize()
 }
 
 func main() {

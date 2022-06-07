@@ -2,6 +2,7 @@ package session
 
 import (
 	"github.com/gorilla/sessions"
+	"goblog/pkg/config"
 	"goblog/pkg/logger"
 	"net/http"
 )
@@ -17,7 +18,7 @@ var Response http.ResponseWriter
 func StartSession(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	Session, err = Store.Get(r, "goblog-session")
+	Session, err = Store.Get(r, config.GetString("session.session_name"))
 	logger.LogError(err)
 
 	Request = r
