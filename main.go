@@ -7,6 +7,7 @@ import (
 	"goblog/bootstrap"
 	"goblog/config"
 	"goblog/http/middlerwares"
+	app_config "goblog/pkg/config"
 	"goblog/pkg/database"
 	"net/http"
 	"net/url"
@@ -33,5 +34,5 @@ func main() {
 	bootstrap.SetupDB()
 	router = bootstrap.SetupRoute()
 
-	http.ListenAndServe(":8088", middlerwares.RemoveTrailingSlash(router))
+	http.ListenAndServe(":"+app_config.GetString("app.port"), middlerwares.RemoveTrailingSlash(router))
 }

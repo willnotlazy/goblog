@@ -20,7 +20,7 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 	_articles, err := article.GetAll()
 	logger.LogError(err)
 
-	view.Render(w, view.D{"Articles": _articles}, "articles.index")
+	view.Render(w, view.D{"Articles": _articles}, "articles.index", "articles._article_meta")
 }
 
 func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +37,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-		view.Render(w, view.D{"Article": _article}, "articles.show")
+		view.Render(w, view.D{"Article": _article}, "articles.show", "articles._article_meta")
 	}
 }
 
