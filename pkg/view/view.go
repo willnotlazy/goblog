@@ -33,6 +33,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 		"RouteName2URL": route.Name2URL,
 		"SafeURL":route.SafeURL,
 	}).ParseFiles(allFiles...)
+
 	logger.LogError(err)
 
 	err = tmpl.ExecuteTemplate(w, name, data)

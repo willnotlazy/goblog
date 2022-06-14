@@ -29,8 +29,8 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/articles", middlerwares.Auth(ac.Store)).Methods("POST").Name("articles.store")
 	r.HandleFunc("/articles/create", middlerwares.Auth(ac.Create)).Methods("GET").Name("articles.create")
 	r.HandleFunc("/articles/{id:[0-9]+}/edit", middlerwares.Auth(ac.Edit)).Methods("GET").Name("articles.edit")
-	r.HandleFunc("/articles/{id:[0-9+]}", middlerwares.Auth(ac.Update)).Methods("POST").Name("articles.update")
-	r.HandleFunc("/articles/{id:[0-9+]}/delete", middlerwares.Auth(ac.Delete)).Methods("POST").Name("articles.delete")
+	r.HandleFunc("/articles/{id:[0-9]+}", middlerwares.Auth(ac.Update)).Methods("POST").Name("articles.update")
+	r.HandleFunc("/articles/{id:[0-9]+}/delete", middlerwares.Auth(ac.Delete)).Methods("POST").Name("articles.delete")
 
 	//r.Use(middlerwares.ForceHTML)
 	// 用户认证
