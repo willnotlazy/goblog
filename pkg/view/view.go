@@ -41,7 +41,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 }
 
 func getTemplateFiles(tplFiles ...string) []string {
-	viewDir := "resources/views/"
+	var viewDir = "resources/views/"
 
 	for i, f := range tplFiles {
 		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
