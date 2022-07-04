@@ -56,3 +56,15 @@ func (article *Article) Delete() (int64, error) {
 
 	return rs.RowsAffected, nil
 }
+
+func GetByUserID(userId string) ([]Article, error) {
+	var articles []Article
+
+	if err := model.DB.Preload("User").Where("user_id = ?", userId).Find(&articles).Error; err != nil {
+		logger.LogError(err)
+		return articles, err
+	}
+
+	return articles, nil
+
+}

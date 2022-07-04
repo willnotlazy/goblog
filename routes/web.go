@@ -47,4 +47,8 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/password/mail", fpc.ForgotPasswordMail).Methods("POST").Name("password.forgot_password_mail")
 	r.HandleFunc("/password/reset", fpc.ResetPassword).Methods("GET").Name("password.reset")
 	r.HandleFunc("/password/doreset", fpc.DoReset).Methods("POST").Name("password.doreset")
+
+	// 用户相关
+	uc := controllers.NewUserController()
+	r.HandleFunc("/users/{id:[0-9+]}", uc.Show).Methods("GET").Name("users.show")
 }
