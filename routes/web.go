@@ -39,7 +39,7 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/auth/do-register", middlerwares.Guest(auc.DoRegister)).Methods("POST").Name("auth.doregister")
 	r.HandleFunc("/auth/login", middlerwares.Guest(auc.Login)).Methods("GET").Name("auth.login")
 	r.HandleFunc("/auth/dologin", middlerwares.Guest(auc.DoLogin)).Methods("POST").Name("auth.dologin")
-	r.HandleFunc("/auth/logout", middlerwares.Guest(auc.Logout)).Methods("POST").Name("auth.logout")
+	r.HandleFunc("/auth/logout", middlerwares.Auth(auc.Logout)).Methods("POST").Name("auth.logout")
 
 	// forgot password
 	fpc := controllers.NewPasswordForgotController()
