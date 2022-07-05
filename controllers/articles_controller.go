@@ -6,6 +6,7 @@ import (
 	"goblog/app/requests"
 	"goblog/models/article"
 	"goblog/pkg/auth"
+	"goblog/pkg/config"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"goblog/pkg/types"
@@ -19,10 +20,11 @@ type ArticlesController struct{
 
 func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
-	_articles, err := article.GetAll()
+	perpage := config.GetInt("pagination.perpage")
+	_articles, viewData, err := article.GetAll(r, perpage)
 	logger.LogError(err)
 
-	view.Render(w, view.D{"Articles": _articles}, "articles.index", "articles._article_meta")
+	view.Render(w, view.D{"Articles": _articles, "Pagination": viewData}, "articles.index", "articles._article_meta")
 }
 
 func (ac *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {

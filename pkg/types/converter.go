@@ -18,3 +18,12 @@ func StringToUint64(s string) uint64 {
 
 	return i
 }
+
+func StringToInt(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		logger.LogError(err)
+	}
+
+	return i
+}

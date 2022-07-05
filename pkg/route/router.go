@@ -2,6 +2,7 @@ package route
 
 import (
 	"github.com/gorilla/mux"
+	"goblog/pkg/config"
 	"goblog/pkg/logger"
 	"html/template"
 	"net/http"
@@ -26,7 +27,7 @@ func Name2URL(routeName string, pair ...string) string {
 		return ""
 	}
 
-	return url.String()
+	return config.GetString("app.url") + url.String()
 }
 
 func Name2FullURL(routeName string, r *http.Request, pair ...string) string {

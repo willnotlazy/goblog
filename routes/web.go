@@ -17,7 +17,7 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.PathPrefix("/css/").Handler(http.FileServer(http.Dir("./public")))
 	r.PathPrefix("/js/").Handler(http.FileServer(http.Dir("./public")))
 
-	//r.HandleFunc("/", pc.Home).Methods("GET").Name("home")
+	r.HandleFunc("/", pc.Home).Methods("GET").Name("home")
 	r.HandleFunc("/about", pc.About).Methods("GET").Name("about")
 	// 404
 	r.NotFoundHandler = http.HandlerFunc(pc.NotFound)
